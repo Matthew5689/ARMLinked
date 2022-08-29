@@ -4,14 +4,14 @@
     "parameters": {
         "VNetName": {
             "type": "string",
-            "defaultValue": "VNetName",
+            "defaultValue": "VNetName5689",
             "metadata": {
                 "description": "VNet Name"
             }
         },
         "SubnetName": {
             "type": "string",
-            "defaultValue": "SubnetName",
+            "defaultValue": "SubnetName5689",
             "metadata": {
                 "description": "description"
             }
@@ -21,14 +21,56 @@
     "variables": {},
     "resources": [
         {
+            "name": "[parameters('VNetName')]" ,
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('VNetName')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('SubnetName')]",
+                        "properties": {
+                            "addressPrefix": "10.0.0.0/24"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "publicIPAddress1",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "publicIPAddress1"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "dnsname1"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
+            ]
+        },
+        {
             "name": "virtualNetworkGateway1",
             "type": "Microsoft.Network/virtualNetworkGateways",
             "apiVersion": "2020-11-01",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'linkedDeployment1')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName'))]",
                 "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName'))]"
+                "[resourceId('Microsoft.Network/virtualNetworks', 'virtualNetwork1')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -52,19 +94,6 @@
                 "gatewayType": "Vpn",
                 "vpnType": "PolicyBased",
                 "enableBgp": true
-            }
-        },
-        {
-            "name": "linkedDeployment1",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2021-04-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/Matthew5689/ARMLinked/master/childTemplate.json",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {}
             }
         }
     ],
