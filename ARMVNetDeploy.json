@@ -44,20 +44,19 @@
                 ]
             }
         },
-    {
-        "name": "linkedDeployment1",
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2021-04-01",
-        "properties": {
-            "mode": "Incremental",
-            "templateLink": {
-                "relativePath": "childTemplate.json",
-                "contentVersion": "1.0.0.0"
-            },
-            "parameters": {}
+        {
+            "name": "linkedDeployment1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/Matthew5689/ARMLinked/master/childTemplate.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {}
+            }
         }
-    }
-        
     ],
     "outputs": {}
 }
