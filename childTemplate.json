@@ -21,36 +21,27 @@
     "variables": {},
     "resources": [
         {
-            "name": "virtualNetworkGateway1",
-            "type": "Microsoft.Network/virtualNetworkGateways",
+            "name": "[parameters('VNetName')]" ,
+            "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2020-11-01",
             "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName'))]"
-            ],
+            "tags": {
+                "displayName": "[parameters('VNetName')]"
+            },
             "properties": {
-                "ipConfigurations": [
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
                     {
-                        "name": "vnetGatewayConfig",
+                        "name": "[parameters('SubnetName')]",
                         "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'virtualNetwork1', 'subnet1')]"
-                            },
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]"
-                            }
+                            "addressPrefix": "10.0.0.0/24"
                         }
                     }
-                ],
-                "sku": {
-                    "name": "Basic",
-                    "tier": "Basic"
-                },
-                "gatewayType": "Vpn",
-                "vpnType": "PolicyBased",
-                "enableBgp": true
+                ]
             }
         }
     ],

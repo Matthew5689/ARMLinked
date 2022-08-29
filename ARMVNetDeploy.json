@@ -21,27 +21,37 @@
     "variables": {},
     "resources": [
         {
-            "name": "[parameters('VNetName')]" ,
-            "type": "Microsoft.Network/virtualNetworks",
+            "name": "virtualNetworkGateway1",
+            "type": "Microsoft.Network/virtualNetworkGateways",
             "apiVersion": "2020-11-01",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[parameters('VNetName')]"
-            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'linkedDeployment1')]",
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName'))]"
+            ],
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "10.0.0.0/16"
-                    ]
-                },
-                "subnets": [
+                "ipConfigurations": [
                     {
-                        "name": "[parameters('SubnetName')]",
+                        "name": "vnetGatewayConfig",
                         "properties": {
-                            "addressPrefix": "10.0.0.0/24"
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'virtualNetwork1', 'subnet1')]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]"
+                            }
                         }
                     }
-                ]
+                ],
+                "sku": {
+                    "name": "VpnGw1",
+                    "tier": "VpnGw1"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "PolicyBased",
+                "enableBgp": true
             }
         },
         {
@@ -55,10 +65,7 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {}
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
-            ]
+            }
         }
     ],
     "outputs": {}
