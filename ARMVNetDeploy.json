@@ -11,9 +11,23 @@
         },
         "SubnetName": {
             "type": "string",
-            "defaultValue": "SubnetName5689",
+            "defaultValue": "GatewaySubnet",
             "metadata": {
                 "description": "description"
+            }
+        },
+        "PublicIP": {
+            "type": "string",
+            "defaultValue": "PublicIP5689",
+            "metadata": {
+                "description": "Public IP Address"
+            }
+        },
+        "DNSValue": {
+            "type": "string",
+            "defaultValue": "[toLower(concat(parameters('VNetName'), 'pubip'))]",
+            "metadata": {
+                "description": "Public IP DNS"
             }
         }
     },
@@ -55,12 +69,9 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "dnsname1"
+                    "domainNameLabel": "[parameters('DNSValue')]"
                 }
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
-            ]
+            }
         },
         {
             "name": "virtualNetworkGateway1",
@@ -69,8 +80,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNetName'))]",
-                "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]",
-                "[resourceId('Microsoft.Network/virtualNetworks', 'virtualNetwork1')]"
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]"
             ],
             "properties": {
                 "ipConfigurations": [
@@ -79,7 +89,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'virtualNetwork1', 'subnet1')]"
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNetName'), parameters('SubnetName'))]"
                             },
                             "publicIPAddress": {
                                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'publicIPAddress1')]"
