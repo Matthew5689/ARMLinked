@@ -42,10 +42,7 @@
                         }
                     }
                 ]
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'linkedDeployment1')]"
-            ]
+            }
         },
         {
             "name": "linkedDeployment1",
@@ -58,7 +55,10 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {}
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('SubnetName'))]"
+            ]
         }
     ],
     "outputs": {}
