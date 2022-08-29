@@ -42,7 +42,10 @@
                         }
                     }
                 ]
-            }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'linkedDeployment1')]"
+            ]
         },
         {
             "name": "linkedDeployment1",
